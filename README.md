@@ -4,7 +4,7 @@ Provision a Kubernetes Cluster that communicates via a Wireguard Mesh.
 
 ## Example Architecture
 
-<p align="center">![architecture diagram](k8s-wireguard.png)</p>
+<p align="center"><img alt="architecture diagram" src="k8s-wireguard.png" /></p>
 
 The Control Plane and Worker 1 and 2 are running in virtual machines on a local [Proxmox](https://proxmox.com/en/) server. Additional there is one worker hosted at a cloud provider. All nodes are connected via a Wireguard Mesh, which is automatically configured via an [Ansible](https://www.ansible.com/) playbook. All nodes are provisionied via the playbook as well and are running Ubuntu 20.04.
 
