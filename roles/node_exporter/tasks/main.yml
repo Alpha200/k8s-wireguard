@@ -1,0 +1,17 @@
+- name: Ensure the node exporter namespace exists
+  community.kubernetes.k8s:
+    api_version: v1
+    kind: Namespace
+    name: node-exporter
+    state: present
+
+- name: Add stable chart repo
+  community.kubernetes.helm_repository:
+    name: stable
+    repo_url: "https://kubernetes-charts.storage.googleapis.com"
+
+- name: Install node exporter helm chart
+  community.kubernetes.helm:
+    name: node-exporter
+    chart_ref: stable/prometheus-node-exporter
+    release_namespace: node-exporter

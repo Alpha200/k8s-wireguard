@@ -1,0 +1,27 @@
+- name: Ensure the ingress namespace exists
+  community.kubernetes.k8s:
+    api_version: v1
+    kind: Namespace
+    name: ingress
+    state: present
+
+- name: Add stable chart repo
+  community.kubernetes.helm_repository:
+    name: stable
+    repo_url: "https://kubernetes-charts.storage.googleapis.com"
+
+- name: Install nginx ingress
+  community.kubernetes.helm:
+    name: nginx-ingress
+    chart_ref: stable/nginx-ingress
+    release_namespace: ingress
+    values:
+      controller:
+        service:
+          externalIPs: "{{ ingress_external_ips }}"
+
+- name: Add ingress config map for tls
+  community.kubernetes.k8s:
+    definition: "{{ lookup('file', 'ingress-config-map.yml') }}"
+    namespace: ingress
+    state: present

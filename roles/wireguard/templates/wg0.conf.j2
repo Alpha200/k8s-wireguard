@@ -1,0 +1,19 @@
+[Interface]
+Address = {{ wireguard.private_ip }}/16
+ListenPort = 51820
+PrivateKey = {{ wireguard.private_key }}
+PostUp = iptables -A FORWARD -i %i -j ACCEPT{% if is_nfs_router | default(false) %}; iptables -t nat -A POSTROUTING -o {{ ansible_default_ipv4["interface"] }} -j MASQUERADE{% endif %}
+
+PostDown = iptables -D FORWARD -i %i -j ACCEPT{% if is_nfs_router | default(false) %}; iptables -t nat -D POSTROUTING -o {{ ansible_default_ipv4["interface"] }} -j MASQUERADE{% endif %}
+
+{% for server in groups.all %}
+{% if server != ansible_fqdn %}
+
+[Peer]
+PublicKey = {{ hostvars[server].wireguard.public_key }}
+AllowedIPs = {{ hostvars[server].wireguard.private_ip }}/32{% if hostvars[server].is_nfs_router | default(false) %}, {{ nfs_server }}/32{% endif %}
+
+Endpoint = {{ server }}:51820
+PersistentKeepalive = 25
+{% endif %}
+{% endfor %}

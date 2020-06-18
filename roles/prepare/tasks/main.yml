@@ -1,0 +1,22 @@
+- name: Upgrade all system packages
+  apt:
+    upgrade: dist
+    update_cache: yes
+  register: upgraded
+
+- name: Ensure qemu agent is installed
+  apt:
+    name: qemu-guest-agent
+    state: present
+  register: guestagent
+
+- name: Reboot system
+  reboot:
+  when: upgraded.changed or guestagent.changed
+
+- name: Ensure the nfs client libraries are installed
+  apt:
+    name: nfs-common
+    state: present
+
+

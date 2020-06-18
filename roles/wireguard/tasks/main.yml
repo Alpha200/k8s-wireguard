@@ -1,0 +1,27 @@
+- name: Ensure wireguard-tools are installed
+  apt:
+    name: wireguard-tools
+    state: present
+
+- name: Create wireguard configuration
+  template:
+    src: wg0.conf.j2
+    dest: /etc/wireguard/wg0.conf
+  register: conf_created
+
+- name: Enable wireguard configuration
+  systemd:
+    name: wg-quick@wg0
+    enabled: yes
+
+- name: Restart wireguard with systemd after configuration change
+  systemd:
+    name: wg-quick@wg0
+    state: restarted
+  when: conf_created.changed
+
+- name: Ensure wireguard is started
+  systemd:
+    name: wg-quick@wg0
+    state: started
+  when: not conf_created.changed

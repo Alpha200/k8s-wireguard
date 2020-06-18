@@ -1,0 +1,30 @@
+---
+- hosts: localhost
+  gather_facts: false
+  connection: local
+
+  collections:
+    - community.kubernetes
+
+  vars:
+    ingress_external_ips:
+      - 192.168.178.63
+      - 10.18.108.191
+
+  tasks:
+    - import_role:
+        name: ingress
+      tags:
+        - ingress
+    - import_role:
+        name: node_exporter
+      tags:
+        - node_exporter
+    - import_role:
+        name: cert_manager
+      tags:
+        - cert_manager
+    - import_role:
+        name: nfs_client_provisioner
+      tags:
+        - nfs_client_provisioner

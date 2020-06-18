@@ -1,0 +1,58 @@
+- name: Install requirements
+  apt:
+    name: "{{ packages }}"
+    update_cache: yes
+  vars:
+    packages:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - software-properties-common
+    - python3-pip
+
+- name: Add key for docker repository
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add docker repository
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
+    state: present
+
+- name: Ensure docker configuration directory exists
+  file:
+    path: /etc/docker
+    state: directory
+
+- name: Install docker configuration
+  copy:
+    src: daemon.json
+    dest: /etc/docker/daemon.json
+
+- name: Install docker ce
+  apt:
+    name: docker-ce
+    update_cache: yes
+    state: latest
+
+- name: Install docker python module
+  pip:
+    name: docker
+    state: present
+
+- name: Copy prune service
+  copy:
+    src: docker-prune.service
+    dest: /etc/systemd/system/docker-prune.service
+
+- name: Copy prune timer
+  copy:
+    src: docker-prune.timer
+    dest: /etc/systemd/system/docker-prune.timer
+
+- name: Enable prune timer
+  systemd:
+    name: docker-prune.timer
+    state: started
+    enabled: yes
