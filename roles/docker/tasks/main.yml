@@ -40,19 +40,3 @@
   pip:
     name: docker
     state: present
-
-- name: Copy prune service
-  copy:
-    src: docker-prune.service
-    dest: /etc/systemd/system/docker-prune.service
-
-- name: Copy prune timer
-  copy:
-    src: docker-prune.timer
-    dest: /etc/systemd/system/docker-prune.timer
-
-- name: Enable prune timer
-  systemd:
-    name: docker-prune.timer
-    state: started
-    enabled: yes
